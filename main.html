@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>UTKARSH DOSHI - Creative Portfolio</title>
+  <!-- Google Fonts, FontAwesome, and your main CSS files -->
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <!-- Leaflet CSS for the map -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+  <style>
+    /* Existing CSS ... */
+    body { font-family: 'Montserrat', sans-serif; background: #fff; color: #333; line-height: 1.6; }
+    a { color: inherit; text-decoration: none; }
+    img { max-width: 100%; display: block; }
+    header {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      z-index: 1000;
+      background: rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(10px);
+      transition: background 0.3s ease;
+    }
+    header.sticky { background: #333; }
+    .nav-container {
+      max-width: 1200px;
+      margin: auto;
+      padding: 10px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .logo { font-size: 1.5rem; font-weight: 600; color: #fff; }
+    nav ul { list-style: none; display: flex; }
+    nav ul li { margin-left: 20px; }
+    nav ul li a { color: #fff; font-weight: 500; transition: color 0.3s; }
+    nav ul li a:hover { color: #ffea00; }
+    /* Hero Section */
+    .hero {
+      height: 100vh;
+      background: linear-gradient(-45deg, #ff6b6b, #f7d794, #1dd1a1, #54a0ff);
+      background-size: 400% 400%;
+      animation: gradientBG 15s ease infinite;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 0 20px;
+    }
+    @keyframes gradientBG {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    .hero h1 { font-size: 3rem; color: #fff; text-shadow: 2px 2px 5px rgba(0,0,0,0.3); margin-bottom: 20px; }
+    .hero p { font-size: 1.2rem; color: #fff; margin-bottom: 30px; }
+    .hero .btn {
+      background: #ffea00;
+      color: #333;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 25px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    .hero .btn:hover { background: #ffd700; }
+    /* Sections */
+    section { padding: 80px 20px; }
+    .section-title {
+      text-align: center;
+      font-size: 2.5rem;
+      margin-bottom: 40px;
+      position: relative;
+      display: inline-block;
+    }
+    .section-title::after {
+      content: "";
+      width: 50%;
+      height: 4px;
+      background: #ff6b6b;
+      position: absolute;
+      bottom: -10px;
+      left: 25%;
+      border-radius: 2px;
+    }
+    .container { max-width: 1200px; margin: auto; }
+    /* About Section */
+    .about {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+    }
+    .about img {
+      width: 300px;
+      height: 300px;
+      object-fit: cover;
+      border-radius: 50%;
+      border: 5px solid #ff6b6b;
+      margin: 20px;
+    }
+    .about-text {
+      flex: 1;
+      min-width: 300px;
+      margin: 20px;
+      animation: fadeIn 1s ease-in;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateX(-20px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+    /* Grid Layout for Cards */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 30px;
+    }
+    .card {
+      background: #fff;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+    .card:hover { transform: translateY(-5px); box-shadow: 0 8px 16px rgba(0,0,0,0.2); }
+    .card h3 { margin-bottom: 15px; color: #ff6b6b; }
+    .card p { color: #555; }
+    /* Social Links */
+    .social-links { text-align: center; margin-top: 20px; }
+    .social-links a {
+      margin: 0 10px;
+      font-size: 1.5rem;
+      color: #333;
+      transition: transform 0.3s, color 0.3s;
+    }
+    .social-links a:hover { transform: scale(1.2); color: #ff6b6b; }
+    /* Footer */
+    footer { background: #333; color: #fff; text-align: center; padding: 20px; }
+    /* Map Section */
+    #map { height: 600px; width: 100%; margin: 20px 0; }
+    /* Responsive Adjustments */
+    @media(max-width:768px) {
+      .hero h1 { font-size: 2.5rem; }
+      .hero p { font-size: 1rem; }
+      .about { flex-direction: column; }
+    }
+    /* Back to Top Button */
+    #backToTop {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      background: #ff6b6b;
+      color: #fff;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 1.2rem;
+      display: none;
+      z-index: 1000;
+      transition: opacity 0.3s;
+    }
+  </style>
+</head>
+<body>
+  <!-- Navigation -->
+  <header id="header">
+    <div class="nav-container">
+      <div class="logo">UTKARSH DOSHI</div>
+      <nav>
+        <ul>
+          <li><a href="#about">About</a></li>
+          <li><a href="#projects">Projects</a></li>
+          <li><a href="#skills">Skills</a></li>
+          <li><a href="#education">Education</a></li>
+          <li><a href="#experience">Experience</a></li>
+          <li><a href="#achievements">Achievements</a></li>
+          <li><a href="#photos">Photos</a></li>
+          <li><a href="#places">Places</a></li>
+          <li><a href="#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="container">
+      <h1>Welcome to My Creative Space</h1>
+      <p>I am UTKARSH DOSHI, a passionate engineer and machine learning enthusiast blending innovation with technology.</p>
+      <button class="btn" onclick="document.getElementById('about').scrollIntoView({behavior: 'smooth'})">Discover More</button>
+    </div>
+  </section>
+
+  <!-- About Section -->
+  <section id="about">
+    <div class="container">
+      <h2 class="section-title">About Me</h2>
+      <div class="about">
+        <img src="https://via.placeholder.com/300" alt="UTKARSH DOSHI" />
+        <div class="about-text">
+          <p>Hello! I'm UTKARSH DOSHI, currently based in Pittsburgh, PA. I am a soon-to-be graduate from the Indian Institute of Technology, Hyderabad with a major in Electrical Engineering (CGPA: 8.23/10). My journey in technology spans research and development in machine learning and AI, with hands-on experience in medical imaging, algorithm development, and innovative project design.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Projects Section -->
+  <section id="projects">
+    <div class="container">
+      <h2 class="section-title">Projects</h2>
+      <div class="grid">
+        <div class="card">
+          <h3>Jewellery 3-D Design Matching</h3>
+          <p>Developed a system to automate matching ornaments with their corresponding wax moulds—reducing tagging time from nearly a minute to under 2.5 seconds. Deployed using ngrok. <br><em>(Dec 2023)</em></p>
+        </div>
+        <div class="card">
+          <h3>Autofill AIMS CAPTCHA (Chrome Extension)</h3>
+          <p>Automated filling captchas and logging into the IITH course registration site using an Artificial Neural Network. Built the dataset from scratch with Selenium; achieved over 600 downloads. <br><em>(Jul 2022 – Aug 2022)</em></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Skills Section -->
+  <section id="skills">
+    <div class="container">
+      <h2 class="section-title">Skills</h2>
+      <div class="grid">
+        <div class="card">
+          <h3>Programming &amp; Scripting</h3>
+          <p>Python, HTML, CSS</p>
+        </div>
+        <div class="card">
+          <h3>Machine Learning &amp; AI</h3>
+          <p>PyTorch, TensorFlow, Scikit‑learn, OpenCV</p>
+        </div>
+        <div class="card">
+          <h3>Data Processing</h3>
+          <p>Pandas, NumPy</p>
+        </div>
+        <div class="card">
+          <h3>Automation &amp; Tools</h3>
+          <p>Selenium, Roboflow</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Education Section -->
+  <section id="education">
+    <div class="container">
+      <h2 class="section-title">Education</h2>
+      <div class="grid">
+        <div class="card">
+          <h3>Indian Institute of Technology, Hyderabad</h3>
+          <p>Bachelor of Technology in Electrical Engineering</p>
+          <p>Graduation: July 2024 | CGPA: 8.23/10</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Experience Section -->
+  <section id="experience">
+    <div class="container">
+      <h2 class="section-title">Experience</h2>
+      <div class="grid">
+        <div class="card">
+          <h3>Research Fellow, University of Pittsburgh Medical Center</h3>
+          <p><em>Aug 2024 – Present</em></p>
+          <p>Developing algorithms for Geographic Atrophy and Ellipsoid Zone on Bscan and enface images. Created a label-free multi-modal fundus image registration algorithm.</p>
+        </div>
+        <div class="card">
+          <h3>Artificial Intelligence Intern, Unstudio (Remote)</h3>
+          <p><em>Dec 2023 – Jan 2024</em></p>
+          <p>Optimized workflow and inference scripts for fine-tuned Stable DiffusionXL models; trained Low-rank adapters and T2I adapters.</p>
+        </div>
+        <div class="card">
+          <h3>Machine Learning Intern, Philips Innovation Campus, Bengaluru</h3>
+          <p><em>May 2023 – July 2023</em></p>
+          <p>Achieved 96% accuracy on lung nodule classification on an imbalanced dataset. Compared ResNet &amp; VGG models and applied 2D &amp; 3D convolutions using PyTorch for volumetric data.</p>
+        </div>
+        <div class="card">
+          <h3>Machine Learning Intern, Frinks AI (Remote)</h3>
+          <p><em>Dec 2022 – Mar 2023</em></p>
+          <p>Evaluated Yolov5 &amp; Yolov8 variants, automated conversion of binary masks to YOLO format, and built datasets with Roboflow—earning a full-time offer.</p>
+        </div>
+        <div class="card">
+          <h3>Machine Learning Intern, Snazzy, Bengaluru</h3>
+          <p><em>May 2022 – July 2022</em></p>
+          <p>Implemented a research paper from scratch to visualize post-aligner smiles using initial smile and jaw images. Spearheaded dataset creation of 600+ images via web scraping.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Achievements Section -->
+  <section id="achievements">
+    <div class="container">
+      <h2 class="section-title">Achievements</h2>
+      <ul style="list-style: none; text-align: center; padding: 0;">
+        <li style="margin: 10px 0;">NeurIPS 2023 Kaggle Machine Unlearning: Ranked 16th among 1000+ teams; led development of an unlearning algorithm. <br><em>(Sept 2023 – Nov 2023)</em></li>
+        <li style="margin: 10px 0;">Video &amp; Image Processing Cup: Ranked 3rd globally, won $1500 and secured travel grants to IEEE ICIP’23, Kuala Lumpur. <br><em>(Jul 2023 – Oct 2023)</em></li>
+        <li style="margin: 10px 0;">Secured All India Rank of 1586 in JEE Advanced 2020 among 1.65 lakh candidates.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- Photos Section -->
+  <section id="photos">
+    <div class="container">
+      <h2 class="section-title">Photos</h2>
+      <div class="grid">
+        <img src="https://via.placeholder.com/250" alt="Photo 1" />
+        <img src="https://via.placeholder.com/250" alt="Photo 2" />
+        <img src="https://via.placeholder.com/250" alt="Photo 3" />
+        <img src="https://via.placeholder.com/250" alt="Photo 4" />
+      </div>
+    </div>
+  </section>
+
+  <!-- Places I've Been Section -->
+  <section id="places">
+    <div class="container">
+      <h2 class="section-title">Places I've Been</h2>
+      <div id="map"></div>
+    </div>
+  </section>
+
+  <!-- Contact & Social Section -->
+  <section id="contact">
+    <div class="container">
+      <h2 class="section-title">Contact &amp; Social</h2>
+      <div style="text-align: center;">
+        <p>Email: <a href="mailto:utkarsh13520002@gmail.com">utkarsh13520002@gmail.com</a></p>
+        <p>Phone (US): <a href="tel:+14125126470">+1 4125126470</a> | Phone (Whatsapp, India): <a href="tel:+917073849174">+91 7073849174</a></p>
+        <p>Location: Pittsburgh, PA</p>
+      </div>
+      <div class="social-links">
+        <a href="https://medium.com" target="_blank" title="Medium"><i class="fab fa-medium"></i></a>
+        <a href="https://instagram.com" target="_blank" title="Instagram"><i class="fab fa-instagram"></i></a>
+        <a href="https://twitter.com" target="_blank" title="Twitter"><i class="fab fa-twitter"></i></a>
+        <a href="https://linkedin.com" target="_blank" title="LinkedIn"><i class="fab fa-linkedin"></i></a>
+      </div>
+      <!-- <div style="text-align: center; margin-top: 20px;">
+        <a href="https://chromewebstore.google.com/detail/autofill-aims-captcha/onmfdadeadadifdjdogcojhohodljdlc?hl=en&authuser=2" target="_blank" style="color: #ff6b6b;">Download My Chrome Extension</a>
+      </div> -->
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <p>&copy; 2025 UTKARSH DOSHI. All Rights Reserved.</p>
+  </footer>
+
+  <!-- Back to Top Button -->
+  <button id="backToTop" title="Back to top"><i class="fas fa-chevron-up"></i></button>
+
+  <!-- Existing Scripts -->
+  <!-- Leaflet JS and Map Initialization Script -->
+  <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+  <script>
+    // Initialize the map centered on India
+    var map = L.map('map').setView([20.5937, 78.9629], 4);
+
+    // Add OpenStreetMap tiles
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    // Array of travel destinations with updated coordinates
+    var places = [
+      { name: "Udaipur, India", coords: [24.5854, 73.7125] },
+      { name: "Mumbai, India", coords: [19.0760, 72.8777] },
+      { name: "Ahmedabad, India", coords: [23.0225, 72.5714] },
+      { name: "Hyderabad, India", coords: [17.3850, 78.4867] },
+      { name: "Bangalore, India", coords: [12.9716, 77.5946] },
+      { name: "Delhi, India", coords: [28.7041, 77.1025] },
+      { name: "Indore, India", coords: [22.7196, 75.8577] },
+      { name: "Chennai, India", coords: [13.0827, 80.2707] },
+      { name: "Pondicherry, India", coords: [11.9416, 79.8083] },
+      { name: "Matheran, India", coords: [18.9872, 73.2813] },
+      { name: "Lavasa, India", coords: [18.5656, 73.8516] },
+      { name: "Lonavala, India", coords: [18.7500, 73.4000] },
+      { name: "Andaman and Nicobar, India", coords: [11.7401, 92.6586] },
+      { name: "Manali, India", coords: [32.2396, 77.1887] },
+      { name: "Goa, India", coords: [15.2993, 74.1240] },
+      { name: "Ladakh, India", coords: [34.1526, 77.5770] },
+      { name: "Kashmir, India", coords: [34.0837, 74.7973] },
+      { name: "Dubai, UAE", coords: [25.2048, 55.2708] },
+      { name: "Bangkok, Thailand", coords: [13.7563, 100.5018] },
+      { name: "Malaysia", coords: [4.2105, 101.9758] },
+      { name: "Pittsburgh, USA", coords: [40.4406, -79.9959] },
+      { name: "NYC, USA", coords: [40.7128, -74.0060] }
+    ];
+
+    // Add a marker for each destination
+    places.forEach(function(place) {
+      L.marker(place.coords)
+        .addTo(map)
+        .bindPopup(place.name);
+    });
+  </script>
+
+  <script>
+    // Sticky Header and Back-to-Top Button
+    window.addEventListener('scroll', function() {
+      const header = document.getElementById('header');
+      const backToTop = document.getElementById('backToTop');
+      if(window.pageYOffset > 100) { header.classList.add('sticky'); } 
+      else { header.classList.remove('sticky'); }
+      backToTop.style.display = window.pageYOffset > 300 ? 'block' : 'none';
+    });
+    // Smooth scroll back to top
+    document.getElementById('backToTop').addEventListener('click', function(){
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  </script>
+</body>
+</html>
